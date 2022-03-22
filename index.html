@@ -2,17 +2,64 @@
 
 <html>
 <head>
-	<title>DM presentation!</title>
+	<title>G7 | Density-based clustering</title>
+	<link rel="icon" type="image/png" sizes="16x16" href="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAADFUlEQVR4nF2SS2hcVQCGv3PvOXdmMklmYvOYR2raak1FcZHWGoUWWlEbirSuhOJCxI1QpQhS3DSkC10IurBgF0IjOPGB9bFxI3GhJAtnJB2TVtJ2MtU6ZmLIpDOZR+7ce89xY0Pqv/6f8Av+B2NMqFwuv2lZ1sta6z0AUsol7fuT/YnE+0IIdztfmmdeiqLcvbj++aDZiJSLRT/U03Ms8H201ndNH1Lh8DvlYvGw/+Sz0u6ItgjJc3ihGxLh/oARj9NoSv+F4zh9vQSbLkEQbKVorQl8H6ev95h/8jj2N9+DExtDuFkL2Ik20nck1bGjtBpN8leu4LouQgiEELiuSz6fp9VoUh07iq8kaCOBnRbCOsXmZlsnBhDJBHPZLJmpKWZmZhCOg3AcZmdnyWQyzGWziGQCnRyAzc02wjolUY1ftYjkGEw9ZaSNUgqlFE4oRDiXB0A5DkoppFIYacNgCl3byFldOicASjcKExbmHF2dGK25+XeJPd1x0qffBqB04V2Wand4MJVGWBZs1NGI8+m9D4xLANET+2J9bfVkTOvHbGD/zdt4fU2qL54AIPrXMvtXVtlIpQm0pup7v0Xj8S8BLIBUb++1hfz8aDsIpiN+gHVxkvbZCXTxD3TxT7yzE1gXJ4l4Pu0gmF6Ynx8dSiavAojtp1hcXDzUGYtNR7NzKrjwMe2lWwA4u4ewT79K4+CIV69Wnx4eHv75ruYeA4DfF0uvd+/ofE+26iF7uQwYgmQSP9Lp1tbqbz08nP5wO9+658bF8fC++JnljmZmvW0q1JJJaskUbV2ho/np+r6uM8umOB7ertlqYAqDB+l+9CPEfSN4Gj/oxA0SBgwhe0VIuw7KAr2Wo3XtNTF0O7fVoP+SGT3yy9Tly4XBkfXV6yBaSLtCVBVEVBWEtCsgmlRWr/NV4f4Dh2Y+/7r/khkFELumzBOWxXctGFirwXNd3/LGrk+QQnG4v4QBfvonTWA8Prj1CtMbz7OjG8KwojUnxO7PzIKleAQPDHDHBQwI43Eg8iMgyLWOYFBgQTz0324F2uPqv8YLWYTGJkNTAAAAAElFTkSuQmCC" />
 	<meta charset="UTF-8">
+
+	<style>
+p {
+	margin: 5px;
+}
+
+.button {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+}
+
+.button-blue {
+  background-color: white; 
+  color: black; 
+  border: 2px solid #008CBA;
+}
+
+.button-blue:hover {
+  background-color: #008CBA;
+  color: white;
+}
+
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+	</style>
 </head>
 
 <body>
-	<div style="column-count: 2;">
-		<canvas id="myCanvas" width="985.6" height="568.4" style="border: 1px solid #000000; column-span: 1;" onclick="draw(event)"></canvas>
-		<button onclick='alert("ok");'>Im feeling lucky</button>
-		<button onclick='alert("ok");'>Im feeling lucky</button>
+	<div style="display: flex; justify-content: space-between;">
+		<p>Data Mining Course &ndash; Semester 212</p>
+		<p>Lecturer: Assoc. Prof. Tran Minh Quang</p>
+		<p>Density-based clustering &ndash; Group 7</p>
+	</div>
+	
+	<div style="width: 100%; text-align: center;">
+		<h1>Dataset Collector</h1>
+		<canvas id="myCanvas" width="500" height="500" style="border: 2px solid #000000;" onclick="draw(event)"></canvas>
+		</br>
+		</br>
+		<button id="downloadBtn" class="button button-blue">Download data</button>
+		<button id="dbscanBtn" class="button button-blue">DBSCAN</button>
 	</div>
 
-	<script src="minified.js"></script>
+	<script src="index.js"></script>
 </body>
 </html>

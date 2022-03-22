@@ -1,3 +1,6 @@
-data.json
-__pycache__/
-dbscan/
+**/__pycache__/
+DENCLUE/
+educlust/
+optics/
+pyplot_test/
+*.sublime-workspace

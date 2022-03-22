@@ -1,13 +1,19 @@
-import threading, sys
+import threading
+import sys
+from socket import timeout
+import numpy as np
+import plotly.graph_objects as go
 
 import utils
+from denclue2D import Denclue2D
 
 class worker:
-    def __init__(self, clientInfo, points, pointsLock, workerSems):
+    def __init__(self, clientInfo, points, pointsLock, workerSems, dcLock):
         self.clientInfo = clientInfo
         self.points = points
         self.pointsLock = pointsLock
         self.wsems = workerSems
+        self.dcLock = dcLock
 
     def run(self):
         threading.Thread(target=self.serve).start()
@@ -17,7 +23,7 @@ class worker:
         self.clientInfo['conSock'].settimeout(5)
         try:
             request = self.clientInfo['conSock'].recv(2048)
-        except:
+        except timeout:
             print('nothing interesting, moving on')
             self.clientInfo['conSock'].close()
             sys.exit()
@@ -33,7 +39,7 @@ class worker:
             try:
                 # send the payload with the client's IP address :)
                 payload = utils.getFile(requestedFile)
-            except:
+            except OSError:
                 if requestedFile.startswith('getPoints'):
                     query = requestedFile.split('?')[1].split('&')
                     if query[0] == 'new':
@@ -47,8 +53,10 @@ class worker:
                     self.clientInfo['conSock'].close()
                     sys.exit()
             
-            if requestedFile == 'index.html':
-                payload = payload.format(self.clientInfo['addr'])
+            # finish collecting data => start the computation for DENCLUE
+            if requestedFile == 'dbscan.html' and self.clientInfo['addr'][0] == '127.0.0.1':
+                threading.Thread(target=self.generate_denclue_html).start()
+
             header = utils.header.format(len(payload))
             response = header + payload
             self.clientInfo['conSock'].send(response.encode())
@@ -66,10 +74,37 @@ class worker:
                     for wsem in self.wsems.values():
                         wsem.release()
             elif requestedRoute == 'removeColor':
-                self.wsems.pop(int(rpayload))
+                toRemove = int(rpayload)
+                if toRemove in self.wsems:
+                    self.wsems.pop(toRemove)
             else:
                 self.clientInfo['conSock'].send(utils.response404.encode())
                 self.clientInfo['conSock'].close()
                 sys.exit()
 
         self.clientInfo['conSock'].close()
+
+    def generate_denclue_html(self):
+        print('GENERATING...')
+        with open('dcTemplate.html', 'r') as dcTpFile:
+            dcHTML = dcTpFile.read()
+        with self.pointsLock:
+            x, y, _ = zip(*self.points)
+        x, y = np.array(x) / 5, 100 - np.array(y) / 5
+
+        fig = go.Figure(data=[go.Scatter(
+            x = x,
+            y = y,
+            mode = 'markers',)
+        ])
+
+        # fig.update_xaxes(range=(np.linspace(0, 100, 50),[]))
+        # fig.update_yaxes(range=(np.linspace(0, 100, 50),[]))
+        originalDatasetDiv = fig.to_html(include_plotlyjs=False, full_html=False, default_width=400, default_height=400)
+
+        dc = Denclue2D(x, y)
+        dcDiv = dc.render_dens_fig()
+        dcHTML = dcHTML.replace('{% Original data set %}', originalDatasetDiv).replace('{% The plot %}', dcDiv)
+        with self.dcLock:
+            with open('denclue.html', 'w') as dcFile:
+                dcFile.write(dcHTML)

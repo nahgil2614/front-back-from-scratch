@@ -1,3 +1,5 @@
+#TODO: make a url map to restrict the files the client can access
+
 from socket import *
 import threading
 
@@ -22,11 +24,14 @@ pointsLock = threading.Lock()
 # for the long polling - only send data when `points` has new changes
 workerSems = dict()
 
+# for rendering DENCLUE's fig
+dcLock = threading.Lock()
+
 # main loop - to serve the web
 while True:
 	clientInfo = {}
 	clientInfo['conSock'], clientInfo['addr'] = sock.accept()
-	worker(clientInfo, points, pointsLock, workerSems).run()
+	worker(clientInfo, points, pointsLock, workerSems, dcLock).run()
 
 	# print(workerSems)
 	# how to stop this loop and write points to a file?
